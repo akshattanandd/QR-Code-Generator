@@ -101,6 +101,9 @@ footer {
     font-size: 14px;
     color: #fff;
   }
+  span{
+    color: #c24646;
+  }
   
 #imgBox.show-img{
     max-height: 300px;
