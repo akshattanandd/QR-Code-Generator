@@ -11,6 +11,26 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        text-align: center;
+        margin-top: 50px;
+      }
+      .container {
+        display: inline-block;
+      }
+      .imgBox img {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+      button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -18,35 +38,64 @@
       <input type="text" placeholder="Text or URL" id="qrText" />
 
       <div class="imgBox">
-        <img src="" id="qrImage" />
+        <img src="" id="qrImage"  />
       </div>
       <button onclick="generateQR()">Generate</button>
+      <button id="downloadQR" disabled>Download</button>
     </div>
     <footer>
       <p>&copy; 2024 QR Code Generator by <span>Akshat</span>. All rights reserved.</p>
     </footer>
     <script>
-      let imgBox = document.getElementById("imgBox");
-      let qrImage = document.getElementById("qrImage");
-      let qrText = document.getElementById("qrText");
+      const qrImage = document.getElementById("qrImage");
+      const qrText = document.getElementById("qrText");
+      const downloadButton = document.getElementById("downloadQR");
+
       function generateQR() {
         if (qrText.value.length > 0) {
-          qrImage.src =
-            "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" +
-            qrText.value;
-          imgBox.classList.add('show-img');
-        }else{
-            qrText.classList.add('error');
-            setTimeout(()=>{
-                qrText.classList.remove('error');
-            },1000);
+          const qrData = qrText.value;
+          const qrSize = "500x500"; // High-quality size
+          const qrURL =
+            "https://api.qrserver.com/v1/create-qr-code/?size=" +
+            qrSize +
+            "&data=" +
+            encodeURIComponent(qrData);
 
+          qrImage.src = qrURL;
+          qrImage.onload = () => {
+            downloadButton.disabled = false; // Enable download button once the image loads
+          };
+        } else {
+          qrText.classList.add("error");
+          setTimeout(() => {
+            qrText.classList.remove("error");
+          }, 1000);
         }
       }
-      qrText.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-          generateQR(); // Call the generateQR function when Enter is pressed
-        }
+
+      downloadButton.addEventListener("click", () => {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // Set canvas dimensions equal to QR image dimensions
+        canvas.width = 500;
+        canvas.height = 500;
+
+        // Draw the QR image onto the canvas
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Ensure cross-origin compatibility
+        img.src = qrImage.src;
+
+        img.onload = () => {
+          context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Convert canvas to data URL and trigger download
+          const dataURL = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.href = dataURL;
+          link.download = "QRCode.png";
+          link.click();
+        };
       });
     </script>
   </body>
