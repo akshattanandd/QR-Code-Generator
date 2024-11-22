@@ -20,6 +20,7 @@
       .container {
         display: inline-block;
       }
+      input,
       .imgBox img {
         max-width: 100%;
         margin-top: 20px;
@@ -29,6 +30,9 @@
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+      }
+      #downloadQR {
+        display: none; /* Initially hidden */
       }
     </style>
   </head>
@@ -64,7 +68,9 @@
           qrImage.src = qrURL;
           qrImage.onload = () => {
             downloadButton.disabled = false; // Enable download button once the image loads
+            downloadButton.style.display = "inline-block"; 
           };
+          
         } else {
           qrText.classList.add("error");
           setTimeout(() => {
